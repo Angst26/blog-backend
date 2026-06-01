@@ -1,15 +1,22 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
-import type {IPost} from './posts.types';
+import type { IPost } from './posts.types';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
   @Post()
-  async create(
-    @Body() body: { title: string; content: string; authorId: number },
-  ) {
-    return this.postsService.createPost(body);
+  async create(@Body() createPostDto: CreatePostDto) {
+    return this.postsService.createPost(createPostDto);
   }
   @Get()
   async findAll() {

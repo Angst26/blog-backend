@@ -14,16 +14,39 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
-  posts Post[]
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  password     String
+  name         String
+  posts        Post[]
+  messages     Message[]
+  createdChats Chat[]    @relation("ChatCreator")
+  chats        Chat[]    @relation("ChatParticipants")
 }
 
 model Post {
-  id       Int    @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   title    String
-  content  String
+  content  String?
   authorId Int
-  author   User   @relation(fields: [authorId], references: [id])
+  author   User    @relation(fields: [authorId], references: [id])
+}
+
+model Message {
+  id       Int      @id @default(autoincrement())
+  text     String
+  date     DateTime @default(now())
+  authorId Int
+  author   User     @relation(fields: [authorId], references: [id])
+  chatId   Int
+  chat     Chat     @relation(fields: [chatId], references: [id])
+}
+
+model Chat {
+  id           Int       @id @default(autoincrement())
+  title        String
+  participants User[]    @relation("ChatParticipants")
+  creatorId    Int
+  creator      User      @relation("ChatCreator", fields: [creatorId], references: [id])
+  messages     Message[]
 }
