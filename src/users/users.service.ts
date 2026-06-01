@@ -24,6 +24,9 @@ export class UsersService {
         password: true,
       },
     });
+    if (!me) {
+      throw new NotFoundException('Пользователь не найден');
+    }
     return me;
   }
 

@@ -33,11 +33,8 @@ export class UsersController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async getMe(@Request() req) {
-    const me = await this.usersService.findMe(req.user.sub);
-    if (!me) {
-      throw new InternalServerErrorException();
-    }
-    return me;
+    const userId = +req.user.sub;
+    return this.usersService.findMe(userId);
   }
 
   @Get(':id')
