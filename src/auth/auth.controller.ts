@@ -15,5 +15,4 @@ export class AuthController {
   async login(@Body() payload: LoginUserDTO) {
     return this.authService.login(payload);
   }
-
 }
