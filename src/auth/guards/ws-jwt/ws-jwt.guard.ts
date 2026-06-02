@@ -1,27 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Socket } from 'socket.io';
-
-type AuthenticatedSocket = Socket & {
-  user: { sub: number; email: string };
-};
+import { type AuthenticatedSocket } from '../../types/authentificated-socket.types'
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
+  private readonly logger = new Logger(WsJwtGuard.name);
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       // Получаем сокет без явного указания типа Socket, чтобы линтер не привязывался к его интерфейсу
       const client: AuthenticatedSocket = context.switchToWs().getClient();
 
-      // Достаем токен через безопасное обращение к свойствам
       const token = client?.handshake?.auth?.token;
 
       if (!token) {
@@ -35,7 +31,11 @@ export class WsJwtGuard implements CanActivate {
       client['user'] = payload;
 
       return true;
-    } catch {
+    } catch(error) {
+      this.logger.error(
+        `Ошибка авторизации сокета: ${error.message}`,
+        error.stack,
+      );
       return false;
     }
   }

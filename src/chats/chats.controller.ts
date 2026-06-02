@@ -1,6 +1,7 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
 import { ChatsService } from './chats.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard';
+import { type AuthenticatedSocket } from '../auth/types/authentificated-socket.types';
 
 @Controller('chats')
 @UseGuards(JwtAuthGuard)
@@ -13,7 +14,8 @@ export class ChatsController {
   }
 
   @Get()
-  async getChats() {
-    return this.chatsService.getChats();
+  async getUserChats(@Request() req: AuthenticatedSocket) {
+    const userId = +req.user.sub;
+    return this.chatsService.getChats(+userId);
   }
 }

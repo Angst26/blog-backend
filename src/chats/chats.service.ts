@@ -29,13 +29,16 @@ export class ChatsService {
     return chat.messages;
   }
 
-  async getChats() {
+  async getChats(userId: number) {
     const chats = await this.prismaService.chat.findMany({
-      take: 10,
-      select: {
-        id: true,
-        title: true,
+      where: {
+        participants: {
+          some: {
+            id: userId,
+          },
+        },
       },
+      take: 10,
     });
     return chats;
   }
